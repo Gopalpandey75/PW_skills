@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Application</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div>
+      
+    <h1 class="headings">QUIZ APP</h1>
+    </div>
+  <div id="quiz-container">
+    <div id="question-container">
+      <div id="question"></div>
+      <div id="options"></div>
+    </div>
+    <div id="feedback"></div>
+    <div id="info">
+      <span id="question-number"></span>
+      <span id="remaining-number"></span>
+    </div>
+    <div id="score"></div>
+    <button id="submit-btn" onclick="submitAnswer()">Submit</button>
+    <button id="next-btn" onclick="nextQuestion()" style="display:none;">Next Question</button>
+    <button id="restart-btn" onclick="restartQuiz()">Restart</button>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
+<style>
+    /* styles.css */
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #000000;
+  color: white;
+}
+.headings{
+    color: rgb(255, 255, 255);
+
+}
+
+#quiz-container {
+  background: #353030;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+  color: white;
+}
+
+#question-container {
+  margin-bottom: 20px;
+}
+
+#question {
+  font-size: 20px;
+  margin-bottom: 10px;
+
+}
+
+#options button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.correct {
+  background-color: #28a745;
+  color: white;
+}
+
+.incorrect {
+  background-color: #dc3545;
+  color: white;
+}
+
+button {
+  margin-top: 10px;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#submit-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+#next-btn {
+  background-color: #17a2b8;
+  color: white;
+}
+
+#restart-btn {
+  background-color: #6c757d;
+  color: white;
+}
+
+#info {
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+</style>
+<script>
+    // script.js
+let currentQuestionIndex = 0;
+let score = 0;
+const totalQuestions = 10;
+
+const questions = [
+{
+    question: "What is 5 + 7?",
+    options: ["10", "12", "14", "15"],
+    correctAnswer: "12"
+  },
+  {
+    question: "What is 9 - 4?",
+    options: ["3", "5", "7", "6"],
+    correctAnswer: "5"
+  },
+  {
+    question: "What is 8 * 3?",
+    options: ["24", "22", "26", "30"],
+    correctAnswer: "24"
+  },
+  {
+    question: "What is 36 / 6?",
+    options: ["6", "7", "8", "9"],
+    correctAnswer: "6"
+  },
+  {
+    question: "What is the square root of 49?",
+    options: ["6", "7", "8", "9"],
+    correctAnswer: "7"
+  },
+  {
+    question: "What is 15 % 4?",
+    options: ["1", "2", "3", "4"],
+    correctAnswer: "3"
+  },
+  {
+    question: "What is 7 + 3 * 2?",
+    options: ["13", "17", "14", "16"],
+    correctAnswer: "13"
+  },
+  {
+    question: "What is 100 - (2 * 15)?",
+    options: ["70", "75", "85", "90"],
+    correctAnswer: "70"
+  },
+  {
+    question: "What is 9 / 3 + 2?",
+    options: ["5", "6", "7", "8"],
+    correctAnswer: "5"
+  },
+  {
+    question: "What is (4 + 6) * 2?",
+    options: ["18", "20", "22", "24"],
+    correctAnswer: "20"
+  }
+];
+
+function displayQuestion() {
+  const questionElement = document.getElementById('question');
+  const optionsElement = document.getElementById('options');
+  const feedbackElement = document.getElementById('feedback');
+  const questionNumberElement = document.getElementById('question-number');
+  const remainingNumberElement = document.getElementById('remaining-number');
+  
+  feedbackElement.textContent = '';
+  const question = questions[currentQuestionIndex];
+  
+  questionElement.textContent = question.question;
+  optionsElement.innerHTML = '';
+  
+  question.options.forEach(option => {
+    const button = document.createElement('button');
+    button.textContent = option;
+    button.onclick = () => selectAnswer(option);
+    optionsElement.appendChild(button);
+  });
+
+  questionNumberElement.textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
+  remainingNumberElement.textContent = `Remaining: ${totalQuestions - currentQuestionIndex - 1}`;
+  
+  document.getElementById('submit-btn').style.display = 'inline-block';
+  document.getElementById('next-btn').style.display = 'none';
+}
+
+function selectAnswer(answer) {
+  const correctAnswer = questions[currentQuestionIndex].correctAnswer;
+  const buttons = document.querySelectorAll('#options button');
+  
+  buttons.forEach(button => {
+    if (button.textContent === correctAnswer) {
+      button.classList.add('correct');
+    } else if (button.textContent === answer) {
+      button.classList.add('incorrect');
+    }
+    button.disabled = true;
+  });
+
+  if (answer === correctAnswer) {
+    score++;
+  }
+
+  document.getElementById('feedback').textContent = answer === correctAnswer ? "Correct!" : "Incorrect!";
+  document.getElementById('submit-btn').style.display = 'none';
+  document.getElementById('next-btn').style.display = 'inline-block';
+}
+
+function nextQuestion() {
+  currentQuestionIndex++;
+  if (currentQuestionIndex < totalQuestions) {
+    displayQuestion();
+  } else {
+    endQuiz();
+  }
+}
+
+function endQuiz() {
+  document.getElementById('feedback').textContent = `Quiz complete! Your score is ${score}`;
+  document.getElementById('submit-btn').style.display = 'none';
+  document.getElementById('next-btn').style.display = 'none';
+}
+
+function restartQuiz() {
+  currentQuestionIndex = 0;
+  score = 0;
+  displayQuestion();
+}
+
+window.onload = displayQuestion;
+
+</script>
